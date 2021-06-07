@@ -19,9 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.InviteActivity;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity;
 import org.thoughtcrime.securesms.conversationlist.ConversationListFragment;
 import org.thoughtcrime.securesms.groups.ui.creategroup.CreateGroupActivity;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+
+import org.thoughtcrime.securesms.util.SmsUtil;
+import org.thoughtcrime.securesms.wallpaper.ChatWallpaperActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +63,10 @@ public class OnboardingMegaphoneView extends FrameLayout {
 
   private static class CardAdapter extends RecyclerView.Adapter<CardViewHolder> implements ActionClickListener {
 
-    private static final int TYPE_GROUP  = 0;
-    private static final int TYPE_INVITE = 1;
+    private static final int TYPE_GROUP      = 0;
+    private static final int TYPE_INVITE     = 1;
+    private static final int TYPE_APPEARANCE = 3;
+
 
     private final Context                   context;
     private final MegaphoneActionController controller;
@@ -93,9 +99,10 @@ public class OnboardingMegaphoneView extends FrameLayout {
     public @NonNull CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.onboarding_megaphone_list_item, parent, false);
       switch (viewType) {
-        case TYPE_GROUP:  return new GroupCardViewHolder(view);
-        case TYPE_INVITE: return new InviteCardViewHolder(view);
-        default:          throw new IllegalStateException("Invalid viewType! " + viewType);
+        case TYPE_GROUP:      return new GroupCardViewHolder(view);
+        case TYPE_INVITE:     return new InviteCardViewHolder(view);
+        case TYPE_APPEARANCE: return new AppearanceCardViewHolder(view);
+        default:              throw new IllegalStateException("Invalid viewType! " + viewType);
       }
     }
 
@@ -129,6 +136,10 @@ public class OnboardingMegaphoneView extends FrameLayout {
 
       if (SignalStore.onboarding().shouldShowInviteFriends()) {
         data.add(TYPE_INVITE);
+      }
+
+      if (SignalStore.onboarding().shouldShowAppearance()) {
+        data.add(TYPE_APPEARANCE);
       }
       return data;
     }

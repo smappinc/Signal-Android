@@ -141,7 +141,7 @@
   <string name="CommunicationActions_insecure_call">Niezaszyfrowane połączenie</string>
   <string name="CommunicationActions_carrier_charges_may_apply">Mogą obowiązywać opłaty operatora sieci. Numer, do którego dzwonisz, nie jest zarejestrowany w Signal. Połączenie zostanie nawiązane przez Twojego operatora sieci, a nie przez internet.</string>
   <!--ConfirmIdentityDialog-->
-  <string name="ConfirmIdentityDialog_your_safety_number_with_s_has_changed">Numer bezpieczeństwa dla %1$s zmienił się. To może oznaczać, że ktoś próbuje przechwycić Twoją komunikację, lub że po prostu %2$s przeinstalował Signal. </string>
+  <string name="ConfirmIdentityDialog_your_safety_number_with_s_has_changed">Numer bezpieczeństwa dla %1$s zmienił się. To może oznaczać, że ktoś próbuje przechwycić Twoją komunikację lub że po prostu %2$s przeinstalował Signal. </string>
   <string name="ConfirmIdentityDialog_you_may_wish_to_verify_your_safety_number_with_this_contact">Możesz zweryfikować numer bezpieczeństwa dla tego kontaktu.</string>
   <string name="ConfirmIdentityDialog_accept">Akceptuj</string>
   <!--ContactsCursorLoader-->
@@ -243,6 +243,9 @@
   <string name="ConversationActivity_full">Pełne</string>
   <string name="ConversationActivity_error_sending_media">Błąd przy wysyłaniu multimediów</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">Zgłoszono, jako spam i zablokowano.</string>
+  <string name="ConversationActivity_gifs_have_moved">GIF-y zostały przeniesione</string>
+  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Szukaj GIF-ów koło emotikon i naklejek.</string>
+  <string name="ConversationActivity__gifs_are_now_here">GIF-y są teraz tutaj.</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d nieprzeczytana wiadomość</item>
@@ -308,7 +311,7 @@
   <string name="ConversationFragment_verify">Zweryfikuj</string>
   <string name="ConversationFragment_not_now">Nie teraz</string>
   <string name="ConversationFragment_your_safety_number_with_s_changed">Twój numer bezpieczeństwa dla %s zmienił się</string>
-  <string name="ConversationFragment_your_safety_number_with_s_changed_likey_because_they_reinstalled_signal">Twój numer bezpieczeństwa dla %s zmienił się. Ten kontakt prawdopodobnie ponownie zainstalował Signal, lub zmienił urządzenie. Stuknij Zweryfikuj, aby potwierdzić nowy numer bezpieczeństwa. Ta czynność jest opcjonalna.</string>
+  <string name="ConversationFragment_your_safety_number_with_s_changed_likey_because_they_reinstalled_signal">Twój numer bezpieczeństwa dla %s zmienił się. Ten kontakt prawdopodobnie ponownie zainstalował Signal lub zmienił urządzenie. Stuknij Zweryfikuj, aby potwierdzić nowy numer bezpieczeństwa. Ta czynność jest opcjonalna.</string>
   <plurals name="ConversationListFragment_delete_selected_conversations">
     <item quantity="one">Usunąć wybraną rozmowę?</item>
     <item quantity="few">Usunąć wybrane rozmowy?</item>
@@ -648,12 +651,12 @@
     <item quantity="other">%d członków nie ma wsparcia dla Nowych grup, więc nie można utworzyć tej grupy.</item>
   </plurals>
   <!--NonGv2MemberDialog-->
-  <string name="NonGv2MemberDialog_single_users_are_non_gv2_capable">Zostanie utworzona Stara grupa, gdyż “%1$s” używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem, gdy zaktualizuje Signal, lub usunąć go przed utworzeniem grupy.</string>
+  <string name="NonGv2MemberDialog_single_users_are_non_gv2_capable">Zostanie utworzona Stara grupa, gdyż “%1$s” używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem, gdy zaktualizuje Signal lub usunąć go przed utworzeniem grupy.</string>
   <plurals name="NonGv2MemberDialog_d_users_are_non_gv2_capable">
-    <item quantity="one">Zostanie utworzona Stara grupa, gdyż %1$d członek używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem, gdy zaktualizuje Signal, lub usunąć go przed utworzeniem grupy.</item>
-    <item quantity="few">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</item>
-    <item quantity="many">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</item>
-    <item quantity="other">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</item>
+    <item quantity="one">Zostanie utworzona Stara grupa, gdyż %1$d członek używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem, gdy zaktualizuje Signal lub usunąć go przed utworzeniem grupy.</item>
+    <item quantity="few">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal lub usunąć je przed utworzeniem grupy.</item>
+    <item quantity="many">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal lub usunąć je przed utworzeniem grupy.</item>
+    <item quantity="other">Zostanie utworzona Stara grupa, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami, gdy zaktualizują Signal lub usunąć je przed utworzeniem grupy.</item>
   </plurals>
   <string name="NonGv2MemberDialog_single_users_are_non_gv2_capable_forced_migration">Ta grupa nie może zostać utworzona, gdyż \"%1$s\" używa starej wersji Signal. Musisz usunąć go przed utworzeniem grupy.</string>
   <plurals name="NonGv2MemberDialog_d_users_are_non_gv2_capable_forced_migration">
@@ -925,6 +928,7 @@
   <string name="Megaphones_new_group">Nowa grupa</string>
   <string name="Megaphones_invite_friends">Zaproś znajomych</string>
   <string name="Megaphones_use_sms">Użyj SMS</string>
+  <string name="Megaphones_appearance">Wygląd</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Połączenie Signal w toku</string>
   <string name="NotificationBarManager__establishing_signal_call">Nawiązywanie połączenia Signal</string>
@@ -1369,7 +1373,7 @@
   <string name="RegistrationActivity_is_your_phone_number_above_correct">Czy powyższy numer jest poprawny?</string>
   <string name="RegistrationActivity_edit_number">Edytuj numer</string>
   <string name="RegistrationActivity_missing_google_play_services">Brak Usług Google Play</string>
-  <string name="RegistrationActivity_this_device_is_missing_google_play_services">Brak Usług Google Play na tym urządzeniu. Nadal możesz używać Signal, lecz ta konfiguracja może powodować mniejszą niezawodność i wydajność\n\nJeśli nie jesteś zaawansowanym użytkownikiem, nie korzystasz ze zmodyfikowanego systemu Android, lub sądzisz, że to błąd, wyślij e-mail na adres support@signal.org, aby otrzymać pomoc.</string>
+  <string name="RegistrationActivity_this_device_is_missing_google_play_services">Brak Usług Google Play na tym urządzeniu. Nadal możesz używać Signal, lecz ta konfiguracja może powodować mniejszą niezawodność i wydajność\n\nJeśli nie jesteś zaawansowanym użytkownikiem, nie korzystasz ze zmodyfikowanego systemu Android lub sądzisz, że to błąd, wyślij e-mail na adres support@signal.org, aby otrzymać pomoc.</string>
   <string name="RegistrationActivity_i_understand">Rozumiem</string>
   <string name="RegistrationActivity_play_services_error">Błąd Usług Play</string>
   <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Trwa aktualizacja Usług Sklepu Google Play lub są one niedostępne. Spróbuj ponownie.</string>
@@ -1722,7 +1726,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="conversation_activity__sim_n">SIM %1$d</string>
   <string name="conversation_activity__send">Wyślij</string>
   <string name="conversation_activity__compose_description">Kompozycja wiadomości</string>
-  <string name="conversation_activity__emoji_toggle_description">Przełącz do emoji klawiatury</string>
+  <string name="conversation_activity__emoji_toggle_description">Przełącz na emotikony klawiatury</string>
   <string name="conversation_activity__attachment_thumbnail">Minaturka załącznika</string>
   <string name="conversation_activity__quick_attachment_drawer_toggle_camera_description">Bezpośrednie przechwytywanie</string>
   <string name="conversation_activity__quick_attachment_drawer_record_and_send_audio_description">Nagraj i wyślij załącznik dźwiękowy</string>
@@ -1753,7 +1757,7 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="ConversationUpdateItem_no_groups_in_common_review_requests_carefully">Brak wspólnych grup. Uważnie sprawdzaj wszystkie prośby o kontakt.</string>
   <string name="ConversationUpdateItem_no_contacts_in_this_group_review_requests_carefully">Brak kontaktów w tej grupie. Uważnie sprawdzaj wszystkie prośby o kontakt.</string>
   <string name="ConversationUpdateItem_view">Zobacz</string>
-  <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">Czas znikania wiadomości zostanie ustawiony na %1$s, gdy wyślesz wiadomość.</string>
+  <string name="ConversationUpdateItem_the_disappearing_message_time_will_be_set_to_s_when_you_message_them">Czas znikania wiadomości będzie ustawiony na %1$s, gdy wyślesz wiadomość.</string>
   <!--audio_view-->
   <string name="audio_view__play_pause_accessibility_description">Odtwarzanie … Pauza</string>
   <string name="audio_view__download_accessibility_description">Pobierz</string>
@@ -2118,8 +2122,8 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="preferences__free_private_messages_and_calls">Darmowe oraz prywatne wiadomości i połączenia do użytkowników Signal</string>
   <string name="preferences__submit_debug_log">Wyślij logi debugowania</string>
   <string name="preferences__delete_account">Usuń konto</string>
-  <string name="preferences__support_wifi_calling">Tryb zgodności \"WiFi Calling\"</string>
-  <string name="preferences__enable_if_your_device_supports_sms_mms_delivery_over_wifi">Włącz jeśli Twoje urządzenie używa dostarczania SMS/MMS przez WiFi (włącz tylko wtedy gdy \"WiFi Calling\" jest włączone na Twoim urządzeniu)</string>
+  <string name="preferences__support_wifi_calling">Tryb zgodności \"Wi-Fi Calling\"</string>
+  <string name="preferences__enable_if_your_device_supports_sms_mms_delivery_over_wifi">Włącz jeśli Twoje urządzenie używa dostarczania SMS/MMS przez Wi-Fi (włącz tylko wtedy gdy \"Wi-Fi Calling\" jest włączone na Twoim urządzeniu)</string>
   <string name="preferences__incognito_keyboard">Klawiatura w trybie prywatnym</string>
   <string name="preferences__read_receipts">Potwierdzenia przeczytania</string>
   <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Gdy potwierdzenia przeczytania są wyłączone, Ty również nie będziesz otrzymywać potwierdzeń od innych użytkowników.</string>
@@ -2154,8 +2158,8 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <string name="preferences_storage__none">Brak</string>
   <string name="preferences_storage__s_messages">%1$s wiadomości</string>
   <string name="preferences_storage__custom">Własny</string>
-  <string name="preferences_advanced__use_system_emoji">Używaj emoji systemu</string>
-  <string name="preferences_advanced__disable_signal_built_in_emoji_support">Wyłącz wbudowane wspomaganie emoji Signal</string>
+  <string name="preferences_advanced__use_system_emoji">Używaj emotikon systemu</string>
+  <string name="preferences_advanced__disable_signal_built_in_emoji_support">Wyłącz wbudowane wsparcie emotikon Signal</string>
   <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Przekazuj połączenia za pomocą serwerów Signal, aby uniknąć ujawnienia adresu IP Twoim kontaktom. Pogorszy to jakość połączenia.</string>
   <string name="preferences_advanced__always_relay_calls">Zawsze przekazuj połączenia</string>
   <string name="preferences_app_protection__who_can">Kto może…</string>
@@ -3124,5 +3128,33 @@ Otrzymano wiadomość wymiany klucz dla niepoprawnej wersji protokołu.</string>
   <!--ChatColorGradientTool-->
   <string name="ChatColorGradientTool_top_edge_selector">Górny selektor</string>
   <string name="ChatColorGradientTool_bottom_edge_selector">Dolny selektor</string>
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__customize_reactions">Dostosuj reakcje</string>
+  <string name="EditReactionsFragment__tap_to_replace_an_emoji">Stuknij, aby zastąpić emotikonę</string>
+  <string name="EditReactionsFragment__reset">Zresetuj</string>
+  <string name="EditReactionsFragment_save">Zapisz</string>
+  <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">\"Automatyczny\" dopasowuje kolor do tapety</string>
+  <string name="CustomChatColorCreatorFragment__drag_to_change_the_direction_of_the_gradient">Przeciągnij, aby zmienić kierunek gradientu</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__new_chat_colors">Nowe kolory czatów</string>
+  <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Zamieniliśmy kolory czatów, aby dać Ci więcej opcji i zwiększyć czytelność rozmów.</string>
+  <string name="ChatColorsMegaphone__appearance">Wygląd</string>
+  <string name="ChatColorsMegaphone__not_now">Nie teraz</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">Emotikony</string>
+  <string name="KeyboardPagerFragment_open_emoji_search">Otwórz wyszukiwarkę emotikon</string>
+  <string name="KeyboardPagerFragment_open_sticker_search">Otwórz wyszukiwarkę naklejek</string>
+  <string name="KeyboardPagerFragment_open_gif_search">Otwórz wyszukiwarkę GIF-ów</string>
+  <string name="KeyboardPagerFragment_stickers">Naklejki</string>
+  <string name="KeyboardPagerFragment_backspace">Backspace</string>
+  <string name="KeyboardPagerFragment_gifs">GIF-y</string>
+  <string name="KeyboardPagerFragment_search_emoji">Szukaj emotikon</string>
+  <string name="KeyboardPagerfragment_back_to_emoji">Wróć do emotikon</string>
+  <string name="KeyboardPagerfragment_clear_search_entry">Wyczyść wyszukiwanie</string>
+  <string name="KeyboardPagerFragment_search_giphy">Szukaj w GIPHY</string>
+  <!--StickerSearchDialogFragment-->
+  <string name="StickerSearchDialogFragment_search_stickers">Szukaj naklejek</string>
+  <string name="StickerSearchDialogFragment_no_results_found">Brak wyników</string>
+  <string name="EmojiSearchFragment__no_results_found">Brak wyników</string>
   <!--EOF-->
 </resources>

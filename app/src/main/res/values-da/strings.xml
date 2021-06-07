@@ -242,6 +242,9 @@
   <string name="ConversationActivity_full">Fuld</string>
   <string name="ConversationActivity_error_sending_media">Fejl ved afsendelse af medier</string>
   <string name="ConversationActivity__reported_as_spam_and_blocked">Rapporteret som spam og blokeret.</string>
+  <string name="ConversationActivity_gifs_have_moved">GIF\'er er flyttet</string>
+  <string name="ConversationActivity_look_for_gifs_next_to_emoji_and_stickers">Se efter GIF\'er ved siden af emoji og klistermærker.</string>
+  <string name="ConversationActivity__gifs_are_now_here">GIF\'er er nu her.</string>
   <!--ConversationAdapter-->
   <plurals name="ConversationAdapter_n_unread_messages">
     <item quantity="one">%d ulæst besked</item>
@@ -840,6 +843,7 @@
   <string name="Megaphones_new_group">Opret ny gruppe</string>
   <string name="Megaphones_invite_friends">Invitér venner</string>
   <string name="Megaphones_use_sms">Brug SMS</string>
+  <string name="Megaphones_appearance">Udseende</string>
   <!--NotificationBarManager-->
   <string name="NotificationBarManager_signal_call_in_progress">Signal opkald i gang</string>
   <string name="NotificationBarManager__establishing_signal_call">Foretager Signalopkald</string>
@@ -2964,5 +2968,33 @@ Modtog en nøgle besked, for en ugyldig protokol-version
   <!--ChatColorGradientTool-->
   <string name="ChatColorGradientTool_top_edge_selector">Øverste kantvælger</string>
   <string name="ChatColorGradientTool_bottom_edge_selector">Nederste kantvælger</string>
+  <!--EditReactionsFragment-->
+  <string name="EditReactionsFragment__customize_reactions">Tilpas reaktioner</string>
+  <string name="EditReactionsFragment__tap_to_replace_an_emoji">Tryk for at skifte en emoji</string>
+  <string name="EditReactionsFragment__reset">Nulstil</string>
+  <string name="EditReactionsFragment_save">Gem</string>
+  <string name="ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper">Auto-tilstanden matcher farven til baggrunden</string>
+  <string name="CustomChatColorCreatorFragment__drag_to_change_the_direction_of_the_gradient">Træk for at ændre retningen af farveovergang</string>
+  <!--ChatColorsMegaphone-->
+  <string name="ChatColorsMegaphone__new_chat_colors">Nye chatfarver</string>
+  <string name="ChatColorsMegaphone__we_switched_up_chat_colors">Vi har skiftet chatfarver for at give dig flere muligheder og gøre chat nemmere at læse.</string>
+  <string name="ChatColorsMegaphone__appearance">Udseende</string>
+  <string name="ChatColorsMegaphone__not_now">Ikke nu</string>
+  <!--KeyboardPagerFragment-->
+  <string name="KeyboardPagerFragment_emoji">Smiley</string>
+  <string name="KeyboardPagerFragment_open_emoji_search">Åbn emoji-søgning</string>
+  <string name="KeyboardPagerFragment_open_sticker_search">Åbn klistermærke-søgning</string>
+  <string name="KeyboardPagerFragment_open_gif_search">Åbn gif-søgning</string>
+  <string name="KeyboardPagerFragment_stickers">Klistermærker</string>
+  <string name="KeyboardPagerFragment_backspace">Tilbagetast</string>
+  <string name="KeyboardPagerFragment_gifs">Gif\'er</string>
+  <string name="KeyboardPagerFragment_search_emoji">Søg efter emoji</string>
+  <string name="KeyboardPagerfragment_back_to_emoji">Tilbage til emoji</string>
+  <string name="KeyboardPagerfragment_clear_search_entry">Ryd søgeindlæg</string>
+  <string name="KeyboardPagerFragment_search_giphy">Søg i GIPHY</string>
+  <!--StickerSearchDialogFragment-->
+  <string name="StickerSearchDialogFragment_search_stickers">Søg i klistermærker</string>
+  <string name="StickerSearchDialogFragment_no_results_found">Ingen fundne resultater</string>
+  <string name="EmojiSearchFragment__no_results_found">Ingen fundne resultater</string>
   <!--EOF-->
 </resources>

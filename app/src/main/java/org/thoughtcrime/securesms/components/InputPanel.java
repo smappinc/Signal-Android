@@ -37,6 +37,7 @@ import org.thoughtcrime.securesms.components.emoji.MediaKeyboard;
 import org.thoughtcrime.securesms.conversation.ConversationStickerSuggestionAdapter;
 import org.thoughtcrime.securesms.conversation.colors.Colorizer;
 import org.thoughtcrime.securesms.database.model.StickerRecord;
+import org.thoughtcrime.securesms.keyboard.KeyboardPage;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository;
@@ -279,8 +280,8 @@ public class InputPanel extends LinearLayout
     mediaKeyboard.setVisibility(show ? View.VISIBLE : GONE);
   }
 
-  public void setMediaKeyboardToggleMode(boolean isSticker) {
-    mediaKeyboard.setStickerMode(isSticker);
+  public void setMediaKeyboardToggleMode(@NonNull KeyboardPage page) {
+    mediaKeyboard.setStickerMode(page);
   }
 
   public boolean isStickerMode() {
@@ -288,6 +289,10 @@ public class InputPanel extends LinearLayout
   }
 
   public View getMediaKeyboardToggleAnchorView() {
+    return mediaKeyboard;
+  }
+
+  public MediaKeyboard.MediaKeyboardListener getMediaKeyboardListener() {
     return mediaKeyboard;
   }
 
@@ -424,6 +429,14 @@ public class InputPanel extends LinearLayout
 
   public void releaseRecordingLock() {
     microphoneRecorderView.unlockAction();
+  }
+
+  public void showGifMovedTooltip() {
+    TooltipPopup.forTarget(mediaKeyboard)
+                .setBackgroundTint(ContextCompat.getColor(getContext(), R.color.signal_accent_primary))
+                .setTextColor(getResources().getColor(R.color.core_white))
+                .setText(R.string.ConversationActivity__gifs_are_now_here)
+                .show(TooltipPopup.POSITION_ABOVE);
   }
 
   public interface Listener {

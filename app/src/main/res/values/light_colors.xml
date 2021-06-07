@@ -26,6 +26,9 @@
     <color name="signal_icon_tint_primary">@color/core_grey_75</color>
     <color name="signal_icon_tint_secondary">@color/core_grey_60</color>
 
+    <color name="signal_icon_tint_tab_selected">@color/signal_icon_tint_primary</color>
+    <color name="signal_icon_tint_tab_unselected">@color/core_grey_45</color>
+
     <color name="signal_button_primary">@color/core_ultramarine</color>
     <color name="signal_button_primary_ripple">@color/transparent_black_15</color>
     <color name="signal_button_primary_text">@color/core_white</color>
@@ -50,6 +53,7 @@
 
     <color name="signal_inverse_transparent">@color/transparent_black</color>
     <color name="signal_inverse_transparent_05">@color/transparent_black_05</color>
+    <color name="signal_inverse_transparent_08">@color/transparent_black_08</color>
     <color name="signal_inverse_transparent_10">@color/transparent_black_10</color>
     <color name="signal_inverse_transparent_15">@color/transparent_black_15</color>
     <color name="signal_inverse_transparent_20">@color/transparent_black_20</color>
