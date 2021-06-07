@@ -63,10 +63,8 @@ public class OnboardingMegaphoneView extends FrameLayout {
 
   private static class CardAdapter extends RecyclerView.Adapter<CardViewHolder> implements ActionClickListener {
 
-    private static final int TYPE_GROUP      = 0;
-    private static final int TYPE_INVITE     = 1;
-    private static final int TYPE_APPEARANCE = 3;
-
+    private static final int TYPE_GROUP  = 0;
+    private static final int TYPE_INVITE = 1;
 
     private final Context                   context;
     private final MegaphoneActionController controller;
@@ -99,10 +97,9 @@ public class OnboardingMegaphoneView extends FrameLayout {
     public @NonNull CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.onboarding_megaphone_list_item, parent, false);
       switch (viewType) {
-        case TYPE_GROUP:      return new GroupCardViewHolder(view);
-        case TYPE_INVITE:     return new InviteCardViewHolder(view);
-        case TYPE_APPEARANCE: return new AppearanceCardViewHolder(view);
-        default:              throw new IllegalStateException("Invalid viewType! " + viewType);
+        case TYPE_GROUP:  return new GroupCardViewHolder(view);
+        case TYPE_INVITE: return new InviteCardViewHolder(view);
+        default:          throw new IllegalStateException("Invalid viewType! " + viewType);
       }
     }
 
@@ -136,10 +133,6 @@ public class OnboardingMegaphoneView extends FrameLayout {
 
       if (SignalStore.onboarding().shouldShowInviteFriends()) {
         data.add(TYPE_INVITE);
-      }
-
-      if (SignalStore.onboarding().shouldShowAppearance()) {
-        data.add(TYPE_APPEARANCE);
       }
       return data;
     }
