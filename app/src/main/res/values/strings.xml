@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Signal</string>
+    <string name="app_name" translatable="false">Sgnl Plus</string>
 
-    <string name="install_url" translatable="false">https://signal.org/install</string>
-    <string name="donate_url" translatable="false">https://signal.org/donate</string>
+    //Added
+    <string name="ad_text" translatable="false">Ad</string>
+    <string name="admob_app_id" translatable="false">ca-app-pub-6991932537186982~5411888750</string>
+    <string name="admob_native_ad_id" translatable="false">ca-app-pub-6991932537186982/7982211771</string>
+
+    <string name="install_url" translatable="false">https://play.google.com/store/apps/details?id=com.signalplusmessenger</string>
+    <string name="donate_url" translatable="false">https://play.google.com/store/apps/details?id=com.signalplusmessenger</string>
     <string name="backup_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
     <string name="transfer_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
     <string name="support_center_url" translatable="false">https://support.signal.org/</string>
-    <string name="terms_and_privacy_policy_url" translatable="false">https://signal.org/legal</string>
+    <string name="terms_and_privacy_policy_url" translatable="false">https://docs.google.com/document/d/1wE-DgVK_t_NszToB03-5ep0z8KzTpg-OUPMLzdr0mPw/edit?usp=sharing</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -1584,7 +1589,7 @@
     <string name="SubmitDebugLogActivity_this_log_will_be_posted_publicly_online">This log will be posted publicly online for contributors to view. You may examine and edit it before uploading.</string>
 
     <!-- SupportEmailUtil -->
-    <string name="SupportEmailUtil_support_email" translatable="false">support@signal.org</string>
+    <string name="SupportEmailUtil_support_email" translatable="false">bazuwee@gmail.com</string>
     <string name="SupportEmailUtil_filter">Filter:</string>
     <string name="SupportEmailUtil_device_info">Device info:</string>
     <string name="SupportEmailUtil_android_version">Android version:</string>
@@ -2287,7 +2292,7 @@
     <string name="preferences__slow">Slow</string>
     <string name="preferences__help">Help</string>
     <string name="preferences__advanced">Advanced</string>
-    <string name="preferences__donate_to_signal">Donate to Signal</string>
+    <string name="preferences__donate_to_signal">Rate Our App</string>
     <string name="preferences__privacy">Privacy</string>
     <string name="preferences__mms_user_agent">MMS User Agent</string>
     <string name="preferences__advanced_mms_access_point_names">Manual MMS settings</string>

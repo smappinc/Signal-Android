@@ -119,6 +119,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
+                android:enabled="false"
                 android:text="@string/conversation_activity__enable_signal_for_sms"
                 android:visibility="gone" />
 

@@ -29,11 +29,6 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.WRITE_SMS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
@@ -98,19 +93,22 @@
                  tools:replace="android:allowBackup"
                  android:allowBackup="false"
                  android:theme="@style/TextSecure.LightTheme"
-                 android:largeHeap="true">
+                 android:largeHeap="true"
+                 android:networkSecurityConfig="@xml/network_security_config"
+                 android:hardwareAccelerated="true">
 
     <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U"/>
+            android:value="AIzaSyDKXQBRWY_buj_2P-jE_QIxAEsr8WlxFKA"/>
+
+    <meta-data
+        android:name= "com.google.android.gms.ads.APPLICATION_ID"
+        android:value= "@string/admob_app_id"/>
 
     <meta-data android:name="com.google.android.gms.version"
                android:value="@integer/google_play_services_version" />
 
-    <meta-data android:name="com.google.android.gms.car.application"
-               android:resource="@xml/automotive_app_desc" />
-
-    <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+    <meta-data android:name="firebase_analytics_collection_deactivated" android:value="false" />
     <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
     <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
 
@@ -223,8 +221,6 @@
 
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-            <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
         </intent-filter>
 
         <meta-data android:name="com.sec.minimode.icon.portrait.normal"
@@ -233,6 +229,14 @@
                    android:resource="@mipmap/ic_launcher" />
 
     </activity-alias>
+
+        <activity android:name=".SplashScreen" android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity>
 
     <activity android:name=".deeplinks.DeepLinkEntryActivity"
               android:noHistory="true"
@@ -319,7 +323,7 @@
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 
     <activity android:name=".migrations.ApplicationMigrationActivity"
-              android:theme="@style/NoAnimation.Theme.AppCompat.Light.DarkActionBar"
+              android:theme="@style/SplashTheme2"
               android:launchMode="singleTask"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"/>
 

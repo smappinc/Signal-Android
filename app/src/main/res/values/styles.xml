@@ -522,4 +522,29 @@
         <item name="textAppearanceUnit">@style/TextAppearance.TimeDurationPicker.Unit.Large.Dark</item>
         <item name="android:layoutDirection">ltr</item>
     </style>
+
+
+    //Added
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@drawable/launch_screen</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimaryDark">@color/core_ultramarine_dark</item>
+    </style>
+
+    <style name="SplashTheme2" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@drawable/launch_screen2</item>
+        <item name="colorPrimaryDark">@color/core_ultramarine_dark</item>
+    </style>
+
+    <style name="Sgnl.ArcProgressBar" parent="">
+        <item name="android:layout_width">187dp</item>
+        <item name="android:layout_height">187dp</item>
+        <item name="arcBackgroundColor">@color/core_ultramarine_dark</item>
+        <item name="arcForegroundColor">@color/core_white</item>
+        <item name="arcProgress">0.0</item>
+        <item name="arcStartAngle">120</item>
+        <item name="arcSweepAngle">300</item>
+        <item name="arcWidth">8dp</item>
+        <item name="arcRoundedEnds">true</item>
+    </style>
 </resources>

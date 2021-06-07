@@ -60,11 +60,9 @@ public final class OnboardingValues extends SignalStoreValues {
     return getBoolean(SHOW_INVITE_FRIENDS, false);
   }
 
-  public void setShowSms(boolean value) {
-    putBoolean(SHOW_SMS, value);
-  }
+  public void setShowSms(boolean value) { putBoolean(SHOW_SMS, value); }
 
   public boolean shouldShowSms(@NonNull Context context) {
-    return getBoolean(SHOW_SMS, false) && !Util.isDefaultSmsProvider(context) && PhoneNumberFormatter.getLocalCountryCode() != 91;
+    return false;
   }
 }

@@ -25,7 +25,12 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.AdapterStatus;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.security.ProviderInstaller;
+import com.onesignal.OneSignal;
 
 import org.conscrypt.Conscrypt;
 import org.signal.aesgcmprovider.AesGcmProvider;
@@ -82,6 +87,7 @@ import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 
 import java.security.Security;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -125,7 +131,6 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addBlocking("app-dependencies", this::initializeAppDependencies)
                             .addBlocking("notification-channels", () -> NotificationChannels.create(this))
                             .addBlocking("first-launch", this::initializeFirstEverAppLaunch)
-                            .addBlocking("app-migrations", this::initializeApplicationMigrations)
                             .addBlocking("ring-rtc", this::initializeRingRtc)
                             .addBlocking("mark-registration", () -> RegistrationUtil.maybeMarkRegistrationComplete(this))
                             .addBlocking("lifecycle-observer", () -> ApplicationDependencies.getAppForegroundObserver().addListener(this))
@@ -144,12 +149,15 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             })
                             .addBlocking("blob-provider", this::initializeBlobProvider)
                             .addBlocking("feature-flags", FeatureFlags::init)
+                            .addNonBlocking(this::initializeApplicationMigrations)
                             .addNonBlocking(this::initializeRevealableMessageManager)
                             .addNonBlocking(this::initializeGcmCheck)
                             .addNonBlocking(this::initializeSignedPreKeyCheck)
                             .addNonBlocking(this::initializePeriodicTasks)
                             .addNonBlocking(this::initializeCircumvention)
                             .addNonBlocking(this::initializePendingMessages)
+                            //Added
+                            .addNonBlocking(this::initializeGoogleAdmobSDK)
                             .addNonBlocking(this::initializeCleanup)
                             .addNonBlocking(this::initializeGlideCodecs)
                             .addNonBlocking(RefreshPreKeysJob::scheduleIfNecessary)
@@ -164,6 +172,11 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
     Tracer.getInstance().end("Application#onCreate()");
+
+    OneSignal.startInit(this)
+             .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+             .unsubscribeWhenNotificationsAreDisabled(true)
+             .init();
   }
 
   @Override
@@ -206,6 +219,22 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
       Log.w(TAG, "Build expired!");
       SignalStore.misc().markClientDeprecated();
     }
+  }
+
+  //Added
+  private void initializeGoogleAdmobSDK(){
+    MobileAds.initialize (this, new OnInitializationCompleteListener() {
+      @Override
+      public void onInitializationComplete( InitializationStatus initializationStatus ) {
+        Log.w(TAG, "AdMob Sdk Initialized: "+ initializationStatus);
+
+        Map<String, AdapterStatus> statusMap = initializationStatus.getAdapterStatusMap();
+        for (String adapterClass : statusMap.keySet()) {
+          AdapterStatus status = statusMap.get(adapterClass);
+        }
+      }
+    });
+
   }
 
   private void initializeSecurityProvider() {

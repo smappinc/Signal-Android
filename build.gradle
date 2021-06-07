@@ -3,6 +3,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
         jcenter {
             content {
                 includeVersion 'org.jetbrains.trove4j', 'trove4j', '20160824'
@@ -22,6 +23,7 @@ buildscript {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:10.0.0"
+        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.10, 0.99.99]'
     }
 }
 
@@ -42,6 +44,7 @@ wrapper {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
 }

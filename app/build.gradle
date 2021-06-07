@@ -9,6 +9,7 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'witness'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply from: 'translations.gradle'
 apply from: 'witness-verifications.gradle'
 
@@ -55,8 +56,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 854
-def canonicalVersionName = "5.13.2"
+def canonicalVersionCode = 2
+def canonicalVersionName = "1.0"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -94,6 +95,7 @@ android {
     }
 
     defaultConfig {
+        applicationId = 'com.signalplusmessenger'
         versionCode canonicalVersionCode * postFixSize
         versionName canonicalVersionName
 
@@ -148,6 +150,11 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                onesignal_app_id: '2056d59f-7a13-44eb-903e-796141ecc3ee',
+                // Project number pulled from dashboard, local value is ignored.
+                onesignal_google_project_number: 'REMOTE'
+        ]
     }
 
     compileOptions {
@@ -353,11 +360,15 @@ dependencies {
     implementation "androidx.autofill:autofill:1.0.0"
     implementation "androidx.biometric:biometric:1.1.0"
 
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
     implementation ('com.google.firebase:firebase-messaging:20.2.0') {
-        exclude group: 'com.google.firebase', module: 'firebase-core'
-        exclude group: 'com.google.firebase', module: 'firebase-analytics'
         exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
     }
+
+    //Added
+    implementation 'com.google.ads.mediation:facebook:5.11.0.0'
+    implementation 'com.onesignal:OneSignal:[3.0.0, 3.99.99]'
+    implementation 'com.google.android.gms:play-services-ads:19.2.0'
 
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
