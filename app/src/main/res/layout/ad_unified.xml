@@ -1,4 +1,4 @@
-<com.google.android.gms.ads.formats.UnifiedNativeAdView
+<com.google.android.gms.ads.nativead.NativeAdView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:background="@color/signal_background_primary"
@@ -107,4 +107,4 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</com.google.android.gms.ads.formats.UnifiedNativeAdView>
+</com.google.android.gms.ads.nativead.NativeAdView>

@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
@@ -1523,6 +1524,11 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper implements SignalDatab
     }
 
     Log.i(TAG, "Upgrade complete. Took " + (System.currentTimeMillis() - startTime) + " ms.");
+  }
+
+  @Override
+  public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    throw new SQLiteException("Can't downgrade database from version " + oldVersion + " to " + newVersion);
   }
 
   public org.thoughtcrime.securesms.database.SQLiteDatabase getReadableDatabase() {

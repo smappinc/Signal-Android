@@ -56,8 +56,8 @@ protobuf {
     }
 }
 
-def canonicalVersionCode = 4
-def canonicalVersionName = "1.0"
+def canonicalVersionCode = 12
+def canonicalVersionName = "1.1"
 
 def postFixSize = 100
 def abiPostFix = ['universal'   : 0,
@@ -366,9 +366,9 @@ dependencies {
     }
 
     //Added
-    implementation 'com.google.ads.mediation:facebook:5.11.0.0'
+    implementation 'com.google.ads.mediation:facebook:6.5.0.0'
     implementation 'com.onesignal:OneSignal:[3.0.0, 3.99.99]'
-    implementation 'com.google.android.gms:play-services-ads:19.2.0'
+    implementation 'com.google.android.gms:play-services-ads:20.1.0'
 
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'

@@ -279,9 +279,6 @@ dependencyVerification {
         ['com.google.android.gms:play-services-base:17.0.0',
          'dd0980edf729e0d346e2b58e70801dc237c1aed0c7ab274fa3f1c8c8efc64cc7'],
 
-        ['com.google.android.gms:play-services-basement:17.0.0',
-         'd324a1785bbc48bfe3639fc847cfd3cf43d49e967b5caf2794240a854557a39c'],
-
         ['com.google.android.gms:play-services-maps:16.1.0',
          'ff50cae9e4059416202375597d99cdc8ddefd9cea3f1dc2ff53779a3a12eb480'],
 
@@ -335,9 +332,6 @@ dependencyVerification {
 
         ['com.google.firebase:firebase-installations-interop:16.0.0',
          'd498fe20e7d2c65fc8f7124f1c1791d2828bebdf6bf06ab4cdee13e7fe9ccaa2'],
-
-        ['com.google.firebase:firebase-installations:16.3.1',
-         '20427c6899bcbc0390988c958ab7da0352ba84a869817cb6ae9da3b19892af9f'],
 
         ['com.google.firebase:firebase-messaging:20.2.0',
          'f49cfba49ab33c6fb7436fe9b790b16d3f1265a29955b48fccc1fb1f231da2d8'],

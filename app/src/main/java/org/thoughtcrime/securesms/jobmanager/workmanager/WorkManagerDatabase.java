@@ -28,7 +28,7 @@ final class WorkManagerDatabase extends SQLiteOpenHelper {
   static final String DB_NAME = "androidx.work.workdb";
 
   WorkManagerDatabase(@NonNull Context context) {
-    super(context, DB_NAME, null, 5);
+    super(context, DB_NAME, null, 6);
   }
 
   @Override

@@ -16,6 +16,7 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 
@@ -25,7 +26,10 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.appopen.AppOpenAd;
 import com.google.android.gms.ads.initialization.AdapterStatus;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
@@ -33,6 +37,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.onesignal.OneSignal;
 
 import org.conscrypt.Conscrypt;
+import org.jetbrains.annotations.NotNull;
 import org.signal.aesgcmprovider.AesGcmProvider;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.AndroidLogger;
@@ -105,6 +110,10 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
   private PersistentLogger persistentLogger;
 
+  private AppOpenAd.AppOpenAdLoadCallback loadCallback;
+
+  private static AppOpenManager appOpenManager;
+
   public static ApplicationContext getInstance(Context context) {
     return (ApplicationContext)context.getApplicationContext();
   }
@@ -158,7 +167,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addNonBlocking(this::initializeCircumvention)
                             .addNonBlocking(this::initializePendingMessages)
                             //Added
-                            .addNonBlocking(this::initializeGoogleAdmobSDK)
+                            .addNonBlocking(this::initializeGoogleAdmobSDKwithAdmobOpenAd)
                             .addNonBlocking(this::initializeCleanup)
                             .addNonBlocking(this::initializeGlideCodecs)
                             .addNonBlocking(RefreshPreKeysJob::scheduleIfNecessary)
@@ -179,6 +188,17 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
              .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
              .unsubscribeWhenNotificationsAreDisabled(true)
              .init();
+  }
+
+  //Added AdmobOpenAds
+  private void initializeGoogleAdmobSDKwithAdmobOpenAd(){
+    MobileAds.initialize(this, new OnInitializationCompleteListener() {
+          @Override
+          public void onInitializationComplete(@NotNull InitializationStatus initializationStatus) {}
+        });
+
+    appOpenManager = new AppOpenManager(this);
+
   }
 
   @Override
@@ -221,22 +241,6 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
       Log.w(TAG, "Build expired!");
       SignalStore.misc().markClientDeprecated();
     }
-  }
-
-  //Added
-  private void initializeGoogleAdmobSDK(){
-    MobileAds.initialize (this, new OnInitializationCompleteListener() {
-      @Override
-      public void onInitializationComplete( InitializationStatus initializationStatus ) {
-        Log.w(TAG, "AdMob Sdk Initialized: "+ initializationStatus);
-
-        Map<String, AdapterStatus> statusMap = initializationStatus.getAdapterStatusMap();
-        for (String adapterClass : statusMap.keySet()) {
-          AdapterStatus status = statusMap.get(adapterClass);
-        }
-      }
-    });
-
   }
 
   private void initializeSecurityProvider() {
