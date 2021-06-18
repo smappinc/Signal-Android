@@ -50,7 +50,9 @@ import com.annimon.stream.Stream;
 import com.google.ads.mediation.facebook.FacebookAdapter;
 import com.google.ads.mediation.facebook.FacebookExtras;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.VideoOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -88,6 +90,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.MainFragment;
@@ -158,6 +161,7 @@ import org.thoughtcrime.securesms.util.task.SnackbarAsyncTask;
 import org.thoughtcrime.securesms.util.views.Stub;
 import org.whispersystems.libsignal.util.guava.Optional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -183,35 +187,44 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
   private static final int MAXIMUM_PINNED_CONVERSATIONS = 4;
 
-  private ActionMode                        actionMode;
-  private ConstraintLayout                  constraintLayout;
-  private RecyclerView                      list;
-  private Stub<ReminderView>                reminderView;
-  private Stub<UnreadPaymentsView>          paymentNotificationView;
-  private Stub<ViewGroup>                   emptyState;
-  private TextView                          searchEmptyState;
-  private PulsingFloatingActionButton       fab;
-  private PulsingFloatingActionButton       cameraFab;
-  private Stub<SearchToolbar>               searchToolbar;
-  private ImageView                         proxyStatus;
-  private ImageView                         searchAction;
-  private View                              toolbarShadow;
-  private View                              unreadPaymentsDot;
-  private ConversationListViewModel         viewModel;
-  private RecyclerView.Adapter              activeAdapter;
-  private ConversationListAdapter           defaultAdapter;
-  private ConversationListSearchAdapter     searchAdapter;
-  private StickyHeaderDecoration            searchAdapterDecoration;
-  private Stub<ViewGroup>                   megaphoneContainer;
-  private SnapToTopDataObserver             snapToTopDataObserver;
-  private Drawable                          archiveDrawable;
-  private AppForegroundObserver.Listener    appForegroundObserver;
+  private ActionMode                     actionMode;
+  private ConstraintLayout               constraintLayout;
+  private RecyclerView                   list;
+  private Stub<ReminderView>             reminderView;
+  private Stub<UnreadPaymentsView>       paymentNotificationView;
+  private Stub<ViewGroup>                emptyState;
+  private TextView                       searchEmptyState;
+  private PulsingFloatingActionButton    fab;
+  private PulsingFloatingActionButton    cameraFab;
+  private Stub<SearchToolbar>            searchToolbar;
+  private ImageView                      proxyStatus;
+  private ImageView                      searchAction;
+  private View                           toolbarShadow;
+  private View                           unreadPaymentsDot;
+  private ConversationListViewModel      viewModel;
+  private RecyclerView.Adapter           activeAdapter;
+  private ConversationListAdapter        defaultAdapter;
+  private ConversationListSearchAdapter  searchAdapter;
+  private StickyHeaderDecoration         searchAdapterDecoration;
+  private Stub<ViewGroup>                megaphoneContainer;
+  private SnapToTopDataObserver          snapToTopDataObserver;
+  private Drawable                       archiveDrawable;
+  private AppForegroundObserver.Listener appForegroundObserver;
 
   private Stopwatch startupStopwatch;
 
   //Google Admob
-  private NativeAd nativeAd;
+  private NativeAd    nativeAd;
   private FrameLayout nativeAdPlaceholder;
+
+  // The number of native ads to load and display.
+  public static final int NUMBER_OF_ADS = 5;
+
+  // The AdLoader used to load ads.
+  private AdLoader adLoader;
+
+  // List of native ads that have been successfully loaded.
+  private List<NativeAd> mNativeAds = new ArrayList<>();
 
   public static ConversationListFragment newInstance() {
     return new ConversationListFragment();
@@ -297,6 +310,8 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       refreshAd();
     }
 
+    loadNativeAds();
+
   }
 
   @Override
@@ -368,12 +383,18 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     super.onOptionsItemSelected(item);
 
     switch (item.getItemId()) {
-      case R.id.menu_new_group:         handleCreateGroup();     return true;
-      case R.id.menu_settings:          handleDisplaySettings(); return true;
-      case R.id.menu_clear_passphrase:  handleClearPassphrase(); return true;
-      case R.id.menu_mark_all_read:     handleMarkAllRead();     return true;
-      case R.id.menu_invite:            handleInvite();          return true;
-      case R.id.menu_insights:          handleInsights();        return true;
+      case R.id.menu_new_group:
+        handleCreateGroup(); return true;
+      case R.id.menu_settings:
+        handleDisplaySettings(); return true;
+      case R.id.menu_clear_passphrase:
+        handleClearPassphrase(); return true;
+      case R.id.menu_mark_all_read:
+        handleMarkAllRead(); return true;
+      case R.id.menu_invite:
+        handleInvite(); return true;
+      case R.id.menu_insights:
+        handleInsights(); return true;
     }
 
     return false;
@@ -486,6 +507,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   //Added
+
   /**
    * Google Admob
    */
@@ -523,7 +545,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   /**
    * Creates a request for a new native ad based on the boolean parameters and calls the
    * corresponding "populate" method when one is successfully returned.
-   *
    */
   private void refreshAd() {
 
@@ -535,12 +556,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     builder.forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
       @Override public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
         Log.d(TAG, "OnNativeAdLoaded");
-
-        // You must call destroy on old ads when you are done with them,
-        // otherwise you will have a memory leak.
-        if (nativeAd != null) {
-          nativeAd.destroy();
-        }
 
         if (isAdded()) {
           NativeAdView adView = (NativeAdView) getLayoutInflater()
@@ -570,6 +585,42 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     adLoader.loadAd(new AdRequest.Builder().addNetworkExtrasBundle(FacebookAdapter.class, extras).build());
 
+  }
+
+  private void loadNativeAds() {
+
+    adLoader = new AdLoader.Builder(getActivity(), getString(R.string.admob_native_id_list))
+        .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
+          @Override
+          public void onNativeAdLoaded(NativeAd NativeAd) {
+            // Show the ad.
+            mNativeAds.add(NativeAd);
+            if (!adLoader.isLoading()) {
+              insertAdsInAdapter();
+            }
+          }
+        })
+        .withAdListener(new AdListener() {
+          @Override
+          public void onAdFailedToLoad(LoadAdError adError) {
+            // Handle the failure by logging, altering the UI, and so on.
+          }
+        })
+        .withNativeAdOptions(new NativeAdOptions.Builder()
+                                 // Methods in the NativeAdOptions.Builder class can be
+                                 // used here to specify individual options settings.
+                                 .build())
+        .build();
+
+    // Load the Native Express ad.
+    adLoader.loadAds(new AdRequest.Builder().build(), NUMBER_OF_ADS);
+  }
+
+  private void insertAdsInAdapter() {
+    if (mNativeAds.size() <= 0) {
+      return;
+    }
+    defaultAdapter.addNativeAd(mNativeAds);
   }
 
   @Override
@@ -1032,7 +1083,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     getNavigator().goToConversation(recipient.getId(), threadId, distributionType, -1);
   }
 
-  private void onSubmitList(@NonNull List<Conversation> conversationList) {
+  private void onSubmitList(@NonNull List conversationList) {
     defaultAdapter.submitList(conversationList);
     onPostSubmitList(conversationList.size());
   }
@@ -1145,13 +1196,20 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   @Override
   public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
     switch (item.getItemId()) {
-      case R.id.menu_select_all:       handleSelectAllThreads();     return true;
-      case R.id.menu_delete_selected:  handleDeleteAllSelected();    return true;
-      case R.id.menu_pin_selected:     handlePinAllSelected();       return true;
-      case R.id.menu_unpin_selected:   handleUnpinAllSelected();     return true;
-      case R.id.menu_archive_selected: handleArchiveAllSelected();   return true;
-      case R.id.menu_mark_as_read:     handleMarkSelectedAsRead();   return true;
-      case R.id.menu_mark_as_unread:   handleMarkSelectedAsUnread(); return true;
+      case R.id.menu_select_all:
+        handleSelectAllThreads(); return true;
+      case R.id.menu_delete_selected:
+        handleDeleteAllSelected(); return true;
+      case R.id.menu_pin_selected:
+        handlePinAllSelected(); return true;
+      case R.id.menu_unpin_selected:
+        handleUnpinAllSelected(); return true;
+      case R.id.menu_archive_selected:
+        handleArchiveAllSelected(); return true;
+      case R.id.menu_mark_as_read:
+        handleMarkSelectedAsRead(); return true;
+      case R.id.menu_mark_as_unread:
+        handleMarkSelectedAsUnread(); return true;
     }
 
     return false;
@@ -1162,16 +1220,16 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     defaultAdapter.initializeBatchMode(false);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      TypedArray color = getActivity().getTheme().obtainStyledAttributes(new int[] {android.R.attr.statusBarColor});
+      TypedArray color = getActivity().getTheme().obtainStyledAttributes(new int[] { android.R.attr.statusBarColor });
       WindowUtil.setStatusBarColor(getActivity().getWindow(), color.getColor(0, Color.BLACK));
       color.recycle();
     }
 
     if (Build.VERSION.SDK_INT >= 23) {
-      TypedArray lightStatusBarAttr = getActivity().getTheme().obtainStyledAttributes(new int[] {android.R.attr.windowLightStatusBar});
+      TypedArray lightStatusBarAttr = getActivity().getTheme().obtainStyledAttributes(new int[] { android.R.attr.windowLightStatusBar });
       int        current            = getActivity().getWindow().getDecorView().getSystemUiVisibility();
-      int        statusBarMode      = lightStatusBarAttr.getBoolean(0, false) ? current | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                                                                              : current & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      int statusBarMode = lightStatusBarAttr.getBoolean(0, false) ? current | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                                                  : current & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
 
       getActivity().getWindow().getDecorView().setSystemUiVisibility(statusBarMode);
 
@@ -1253,7 +1311,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
                                 Snackbar.LENGTH_LONG,
                                 false)
     {
-      private final ThreadDatabase threadDatabase= DatabaseFactory.getThreadDatabase(getActivity());
+      private final ThreadDatabase threadDatabase = DatabaseFactory.getThreadDatabase(getActivity());
 
       private List<Long> pinnedThreadIds;
 
@@ -1340,9 +1398,9 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     @Override
     public int getSwipeDirs(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-      if (viewHolder.itemView instanceof ConversationListItemAction      ||
+      if (viewHolder.itemView instanceof ConversationListItemAction ||
           viewHolder instanceof ConversationListAdapter.HeaderViewHolder ||
-          actionMode != null                                             ||
+          actionMode != null ||
           activeAdapter == searchAdapter)
       {
         return 0;
@@ -1355,8 +1413,8 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
       if (viewHolder.itemView instanceof ConversationListItemInboxZero) return;
-      final long threadId    = ((ConversationListItem)viewHolder.itemView).getThreadId();
-      final int  unreadCount = ((ConversationListItem)viewHolder.itemView).getUnreadCount();
+      final long threadId    = ((ConversationListItem) viewHolder.itemView).getThreadId();
+      final int  unreadCount = ((ConversationListItem) viewHolder.itemView).getUnreadCount();
 
       onItemSwiped(threadId, unreadCount);
     }
