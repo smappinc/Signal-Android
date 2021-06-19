@@ -37,9 +37,9 @@ public class AdViewHolder extends RecyclerView.ViewHolder{
     adView.setBodyView(adView.findViewById(R.id.ad_body));
     adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
     adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-    adView.setPriceView(adView.findViewById(R.id.ad_price));
+    /*adView.setPriceView(adView.findViewById(R.id.ad_price));*/
     adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
-    adView.setStoreView(adView.findViewById(R.id.ad_store));
+    /*adView.setStoreView(adView.findViewById(R.id.ad_store));*/
     adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
   }

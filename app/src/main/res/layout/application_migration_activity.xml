@@ -3,6 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:background="@drawable/launch_screen2">
 
@@ -21,23 +22,32 @@
             android:paddingEnd="16dip"
             android:visibility="visible">
 
-            <ProgressBar
-                android:id="@+id/indeterminate_progress"
-                style="@style/Widget.Signal.ArcProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="true" />
-
-            <ProgressBar
-                android:id="@+id/determinate_progress"
-                style="@style/Sgnl.ArcProgressBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="false"
-                android:visibility="gone" />
+            <!--  This is your template view -->
+            <com.google.android.ads.nativetemplates.TemplateView
+                android:id="@+id/my_template"
+                app:gnt_template_type="@layout/gnt_medium_template_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/indeterminate_progress"
+            style="@style/Sgnl.ArcProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="580dp"
+            android:indeterminate="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/app_name"
+            android:textColor="@color/core_white"
+            android:layout_marginTop="630dp"
+            android:textSize="25sp"/>
+
     </FrameLayout>
 </ScrollView>

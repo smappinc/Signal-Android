@@ -21,7 +21,7 @@ public class DozeReminder extends Reminder {
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public DozeReminder(@NonNull final Context context) {
-    super(context.getString(R.string.DozeReminder_optimize_for_missing_play_services),
+    super(context.getString(R.string.app_name),
           context.getString(R.string.DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery));
 
     setOkListener(v -> {

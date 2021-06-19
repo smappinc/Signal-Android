@@ -368,7 +368,9 @@ dependencies {
     //Added
     implementation 'com.google.ads.mediation:facebook:6.5.0.0'
     implementation 'com.onesignal:OneSignal:[3.0.0, 3.99.99]'
-    implementation 'com.google.android.gms:play-services-ads:20.1.0'
+    implementation 'com.google.android.gms:play-services-ads:20.2.0'
+    implementation 'com.google.android.ads:mediation-test-suite:2.0.0'
+    implementation project(':nativetemplates')
 
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'

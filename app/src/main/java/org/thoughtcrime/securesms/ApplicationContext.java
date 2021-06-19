@@ -87,11 +87,13 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
+import org.w3c.dom.Text;
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 
 import java.security.Security;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -136,6 +138,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addBlocking("app-dependencies", this::initializeAppDependencies)
                             .addBlocking("notification-channels", () -> NotificationChannels.create(this))
                             .addBlocking("first-launch", this::initializeFirstEverAppLaunch)
+                            .addBlocking("Initializing-AdmobSDK", this::initializeGoogleAdmobSDKwithAdmobOpenAd)
                             .addBlocking("app-migrations", this::initializeApplicationMigrations)
                             .addBlocking("ring-rtc", this::initializeRingRtc)
                             .addBlocking("mark-registration", () -> RegistrationUtil.maybeMarkRegistrationComplete(this))
@@ -162,7 +165,7 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
                             .addNonBlocking(this::initializeCircumvention)
                             .addNonBlocking(this::initializePendingMessages)
                             //Added
-                            .addNonBlocking(this::initializeGoogleAdmobSDKwithAdmobOpenAd)
+                            /*.addNonBlocking(this::initializeGoogleAdmobSDKwithAdmobOpenAd)*/
                             .addNonBlocking(this::initializeCleanup)
                             .addNonBlocking(this::initializeGlideCodecs)
                             .addNonBlocking(RefreshPreKeysJob::scheduleIfNecessary)
@@ -187,11 +190,17 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
 
   //Added AdmobAdsInitializer
   private void initializeGoogleAdmobSDKwithAdmobOpenAd(){
-    MobileAds.initialize(this, new OnInitializationCompleteListener() {
-          @Override
-          public void onInitializationComplete(@NotNull InitializationStatus initializationStatus) {}
-        });
+    MobileAds.initialize (this, new OnInitializationCompleteListener() {
+      @Override
+      public void onInitializationComplete( InitializationStatus initializationStatus ) {
+        Log.w(TAG, "AdMob Sdk Initialized: "+ initializationStatus);
 
+        Map<String, AdapterStatus> statusMap = initializationStatus.getAdapterStatusMap();
+        for (String adapterClass : statusMap.keySet()) {
+          AdapterStatus status = statusMap.get(adapterClass);
+        }
+      }
+    });
   }
 
   @Override
@@ -303,6 +312,13 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
   }
 
   private void initializeGcmCheck() {
+
+    if(TextSecurePreferences.isFcmDisabled(this)){
+      Log.d(TAG, "FCM already disabled");
+    } else {
+      TextSecurePreferences.setFcmDisabled(this, true);
+    }
+
     if (TextSecurePreferences.isPushRegistered(this)) {
       long nextSetTime = TextSecurePreferences.getFcmTokenLastSetTime(this) + TimeUnit.HOURS.toMillis(6);
 

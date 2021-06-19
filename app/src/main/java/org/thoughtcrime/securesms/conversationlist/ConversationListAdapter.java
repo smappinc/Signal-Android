@@ -31,6 +31,7 @@ import org.thoughtcrime.securesms.nativead.AdViewHolder;
 import org.thoughtcrime.securesms.util.CachedInflater;
 import org.thoughtcrime.securesms.util.ViewUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -100,7 +101,9 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
         int position = holder.getAdapterPosition();
 
         if (position != RecyclerView.NO_POSITION) {
-          onConversationClickListener.onConversationClick((Conversation) getItem(position));
+          if (getItem(position) instanceof Conversation) {
+            onConversationClickListener.onConversationClick((Conversation) getItem(position));
+          }
         }
       });
 
@@ -108,6 +111,7 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
         int position = holder.getAdapterPosition();
 
         if (position != RecyclerView.NO_POSITION) {
+          if (getItem(position) instanceof NativeAd) return false;
           return onConversationClickListener.onConversationLongClick((Conversation) getItem(position));
         }
 
@@ -276,9 +280,12 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
   public void addNativeAd(List<NativeAd> mNativeAds) {
     this.mNativeAds = mNativeAds;
 
-    List<Object> list = getCurrentList();
+    List<Object> clist = getCurrentList();
+    //List<Object> list = Collections.unmodifiableList(new ArrayList<>(clist));
+    List<Object> list = new ArrayList<>();
+    list.addAll(clist);
 
-    int index = 0;
+    int index = AD_OFFSET;
     for (NativeAd ad : mNativeAds) {
       if (index >= getItemCount()) {
         break;
@@ -303,9 +310,9 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
     adView.setBodyView(adView.findViewById(R.id.ad_body));
     adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
     adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-    adView.setPriceView(adView.findViewById(R.id.ad_price));
+    /*adView.setPriceView(adView.findViewById(R.id.ad_price));*/
     adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
-    adView.setStoreView(adView.findViewById(R.id.ad_store));
+    /*adView.setStoreView(adView.findViewById(R.id.ad_store));*/
     adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
 //    adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
@@ -337,7 +344,7 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
       adView.getIconView().setVisibility(View.VISIBLE);
     }
 
-    if (nativeAd.getPrice() == null) {
+    /*if (nativeAd.getPrice() == null) {
       adView.getPriceView().setVisibility(View.INVISIBLE);
     } else {
       adView.getPriceView().setVisibility(View.VISIBLE);
@@ -349,7 +356,7 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
     } else {
       adView.getStoreView().setVisibility(View.VISIBLE);
       ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
-    }
+    }*/
 
     if (nativeAd.getStarRating() == null) {
       adView.getStarRatingView().setVisibility(View.INVISIBLE);
@@ -456,10 +463,14 @@ class ConversationListAdapter extends ListAdapter<Object, RecyclerView.ViewHolde
 //    }
 
     @Override public boolean areItemsTheSame(@NonNull @NotNull Object oldItem, @NonNull @NotNull Object newItem) {
+      if (newItem instanceof NativeAd) return false;
+      if (oldItem instanceof NativeAd) return false;
       return ((Conversation)oldItem).getThreadRecord().getThreadId() == ((Conversation)newItem).getThreadRecord().getThreadId();
     }
 
     @Override public boolean areContentsTheSame(@NonNull @NotNull Object oldItem, @NonNull @NotNull Object newItem) {
+      if (newItem instanceof NativeAd) return false;
+      if (oldItem instanceof NativeAd) return false;
       return ((Conversation)oldItem).equals(newItem);
     }
   }

@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.ads.mediationtestsuite.MediationTestSuite;
+
 import org.thoughtcrime.securesms.devicetransfer.olddevice.OldDeviceTransferLockedDialog;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.AppStartup;
@@ -38,6 +40,7 @@ public class MainActivity extends PassphraseRequiredActivity {
   protected void onCreate(Bundle savedInstanceState, boolean ready) {
     AppStartup.getInstance().onCriticalRenderEventStart();
     super.onCreate(savedInstanceState, ready);
+
     setContentView(R.layout.main_activity);
 
     navigator.onCreate(savedInstanceState);

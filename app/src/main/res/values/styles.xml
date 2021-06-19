@@ -539,7 +539,7 @@
     <style name="Sgnl.ArcProgressBar" parent="">
         <item name="android:layout_width">187dp</item>
         <item name="android:layout_height">187dp</item>
-        <item name="arcBackgroundColor">@color/core_ultramarine_dark</item>
+        <item name="arcBackgroundColor">@color/core_white</item>
         <item name="arcForegroundColor">@color/core_white</item>
         <item name="arcProgress">0.0</item>
         <item name="arcStartAngle">120</item>

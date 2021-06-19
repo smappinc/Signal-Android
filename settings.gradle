@@ -18,3 +18,4 @@ project(':device-transfer-app').projectDir = file('device-transfer/app')
 project(':libsignal-service').projectDir = file('libsignal/service')
 
 rootProject.name='Signal'
+include ':nativetemplates'

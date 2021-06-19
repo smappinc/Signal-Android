@@ -19,6 +19,15 @@ package org.thoughtcrime.securesms.migrations;
 
 import android.os.Bundle;
 
+import com.google.android.ads.nativetemplates.NativeTemplateStyle;
+import com.google.android.ads.nativetemplates.TemplateView;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdOptions;
+
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BaseActivity;
 import org.thoughtcrime.securesms.R;
@@ -43,6 +52,43 @@ public class ApplicationMigrationActivity extends BaseActivity {
       if (running) {
         Log.i(TAG, "UI-blocking migration is in progress. Showing spinner.");
         setContentView(R.layout.application_migration_activity);
+
+        AdLoader adLoader = new AdLoader.Builder(this, getString(R.string.admob_native_ad_migration_activity))
+            .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
+              @Override
+              public void onNativeAdLoaded(NativeAd NativeAd) {
+                NativeTemplateStyle styles = new
+                    NativeTemplateStyle.Builder().build();
+
+                TemplateView template = findViewById(R.id.my_template);
+                template.setStyles(styles);
+                template.setNativeAd(NativeAd);
+
+                if (isDestroyed()) {
+                  NativeAd.destroy();
+                  return;
+                }
+
+              }
+            })
+            .withAdListener(new AdListener() {
+              @Override
+              public void onAdFailedToLoad(LoadAdError adError) {
+                // Handle the failure by logging, altering the UI, and so on.
+              }
+            })
+            .withNativeAdOptions(new NativeAdOptions.Builder()
+                                     // Methods in the NativeAdOptions.Builder class can be
+                                     // used here to specify individual options settings.
+                                     .build())
+            .build();
+
+        adLoader.loadAd(new AdRequest.Builder().build());
+
+
+
+
+
       } else {
         Log.i(TAG, "UI-blocking migration is no-longer in progress. Finishing.");
         startActivity(getIntent().getParcelableExtra("next_intent"));

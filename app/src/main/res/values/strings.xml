@@ -6,8 +6,8 @@
     <string name="ad_text" translatable="false">Ad</string>
     <string name="admob_app_id" translatable="false">ca-app-pub-6991932537186982~5411888750</string>
     <string name="admob_native_ad_id" translatable="false">ca-app-pub-6991932537186982/7982211771</string>
-    <string name="admob_open_ad_id" translatable="false">ca-app-pub-6991932537186982/1253301255</string>
-    <string name="admob_native_id_list" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
+    <string name="admob_native_id_list" translatable="false">ca-app-pub-6991932537186982/7316023016</string>
+    <string name="admob_native_ad_migration_activity" translatable="false">ca-app-pub-6991932537186982/1420003970</string>
 
     <string name="install_url" translatable="false">https://play.google.com/store/apps/details?id=com.signalplusmessenger</string>
     <string name="donate_url" translatable="false">https://play.google.com/store/apps/details?id=com.signalplusmessenger</string>
