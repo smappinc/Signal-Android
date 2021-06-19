@@ -47,6 +47,27 @@ allprojects {
         mavenCentral()
         jcenter()
     }
+
+    afterEvaluate { Project p ->
+        List<String> androidPlugins = ["android", "com.android.application", "android-library", "com.android.library",
+                                       "com.android.test", "com.android.feature", "com.android.dynamic-feature", "com.android.instantapp"]
+
+        boolean isAndroidProject = false
+        for(String s: androidPlugins) {
+            if (p.plugins.findPlugin(s)) {
+                isAndroidProject = true
+                break;
+            }
+        }
+
+        if (!isAndroidProject) {
+            p.tasks.withType(JavaCompile).all {
+                it.options.compilerArgs += ['--release', '8']
+            }
+        }
+    }
+
+
 }
 
 subprojects {
