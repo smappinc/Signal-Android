@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    android:background="@drawable/launch_screen2">
+    android:background="@color/core_ultramarine_dark">
 
     <FrameLayout
         android:layout_width="fill_parent"
