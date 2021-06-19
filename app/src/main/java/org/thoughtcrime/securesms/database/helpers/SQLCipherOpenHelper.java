@@ -41,15 +41,19 @@ import org.thoughtcrime.securesms.database.MentionDatabase;
 import org.thoughtcrime.securesms.database.MmsDatabase;
 import org.thoughtcrime.securesms.database.OneTimePreKeyDatabase;
 import org.thoughtcrime.securesms.database.PaymentDatabase;
+import org.thoughtcrime.securesms.database.PendingRetryReceiptDatabase;
 import org.thoughtcrime.securesms.database.PushDatabase;
 import org.thoughtcrime.securesms.database.RecipientDatabase;
 import org.thoughtcrime.securesms.database.RemappedRecordsDatabase;
 import org.thoughtcrime.securesms.database.SearchDatabase;
+import org.thoughtcrime.securesms.database.SenderKeyDatabase;
+import org.thoughtcrime.securesms.database.SenderKeySharedDatabase;
 import org.thoughtcrime.securesms.database.SessionDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.SignedPreKeyDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.SqlCipherDatabaseHook;
+import org.thoughtcrime.securesms.database.SqlCipherErrorHandler;
 import org.thoughtcrime.securesms.database.StickerDatabase;
 import org.thoughtcrime.securesms.database.ThreadDatabase;
 import org.thoughtcrime.securesms.database.UnknownStorageIdDatabase;
@@ -74,6 +78,7 @@ import org.thoughtcrime.securesms.util.SqlUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Triple;
 import org.thoughtcrime.securesms.util.Util;
+import org.whispersystems.signalservice.api.push.DistributionId;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -193,15 +198,16 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper implements SignalDatab
   private static final int CHAT_COLORS                      = 100;
   private static final int AVATAR_COLORS                    = 101;
   private static final int EMOJI_SEARCH                     = 102;
+  private static final int SENDER_KEY                       = 103;
 
-  private static final int    DATABASE_VERSION = 102;
+  private static final int    DATABASE_VERSION = 103;
   private static final String DATABASE_NAME    = "signal.db";
 
   private final Context        context;
   private final DatabaseSecret databaseSecret;
 
   public SQLCipherOpenHelper(@NonNull Context context, @NonNull DatabaseSecret databaseSecret) {
-    super(context, DATABASE_NAME, null, DATABASE_VERSION, new SqlCipherDatabaseHook());
+    super(context, DATABASE_NAME, null, DATABASE_VERSION, new SqlCipherDatabaseHook(), new SqlCipherErrorHandler(DATABASE_NAME));
 
     this.context        = context.getApplicationContext();
     this.databaseSecret = databaseSecret;
@@ -222,6 +228,9 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper implements SignalDatab
     db.execSQL(OneTimePreKeyDatabase.CREATE_TABLE);
     db.execSQL(SignedPreKeyDatabase.CREATE_TABLE);
     db.execSQL(SessionDatabase.CREATE_TABLE);
+    db.execSQL(SenderKeyDatabase.CREATE_TABLE);
+    db.execSQL(SenderKeySharedDatabase.CREATE_TABLE);
+    db.execSQL(PendingRetryReceiptDatabase.CREATE_TABLE);
     db.execSQL(StickerDatabase.CREATE_TABLE);
     db.execSQL(UnknownStorageIdDatabase.CREATE_TABLE);
     db.execSQL(MentionDatabase.CREATE_TABLE);
@@ -431,7 +440,7 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper implements SignalDatab
               }
             }
 
-            String channelId = NotificationChannels.createChannelFor(context, "contact_" + address + "_" + System.currentTimeMillis(), displayName, messageSoundUri, vibrateEnabled);
+            String channelId = NotificationChannels.createChannelFor(context, "contact_" + address + "_" + System.currentTimeMillis(), displayName, messageSoundUri, vibrateEnabled, null);
 
             ContentValues values = new ContentValues(1);
             values.put("notification_channel", channelId);
@@ -1512,6 +1521,44 @@ public class SQLCipherOpenHelper extends SQLiteOpenHelper implements SignalDatab
 
       if (oldVersion < EMOJI_SEARCH) {
         db.execSQL("CREATE VIRTUAL TABLE emoji_search USING fts5(label, emoji UNINDEXED)");
+      }
+
+      if (oldVersion < SENDER_KEY && !SqlUtil.tableExists(db, "sender_keys")) {
+        db.execSQL("CREATE TABLE sender_keys (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                             "recipient_id INTEGER NOT NULL, " +
+                                             "device INTEGER NOT NULL, " +
+                                             "distribution_id TEXT NOT NULL, " +
+                                             "record BLOB NOT NULL, " +
+                                             "created_at INTEGER NOT NULL, " +
+                                             "UNIQUE(recipient_id, device, distribution_id) ON CONFLICT REPLACE)");
+
+        db.execSQL("CREATE TABLE sender_key_shared (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                                   "distribution_id TEXT NOT NULL, " +
+                                                   "address TEXT NOT NULL, " +
+                                                   "device INTEGER NOT NULL, " +
+                                                   "UNIQUE(distribution_id, address, device) ON CONFLICT REPLACE)");
+
+        db.execSQL("CREATE TABLE pending_retry_receipts (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                                        "author TEXT NOT NULL, " +
+                                                        "device INTEGER NOT NULL, " +
+                                                        "sent_timestamp INTEGER NOT NULL, " +
+                                                        "received_timestamp TEXT NOT NULL, " +
+                                                        "thread_id INTEGER NOT NULL, " +
+                                                        "UNIQUE(author, sent_timestamp) ON CONFLICT REPLACE);");
+
+        db.execSQL("ALTER TABLE groups ADD COLUMN distribution_id TEXT DEFAULT NULL");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS group_distribution_id_index ON groups (distribution_id)");
+
+        try (Cursor cursor = db.query("groups", new String[] { "group_id" }, "LENGTH(group_id) = 85", null, null, null, null)) {
+          while (cursor.moveToNext()) {
+            String        groupId = cursor.getString(cursor.getColumnIndexOrThrow("group_id"));
+            ContentValues values  = new ContentValues();
+
+            values.put("distribution_id", DistributionId.create().toString());
+
+            db.update("groups", values, "group_id = ?", new String[] { groupId });
+          }
+        }
       }
 
       db.setTransactionSuccessful();

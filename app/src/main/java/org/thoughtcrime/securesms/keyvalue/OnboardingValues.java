@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.thoughtcrime.securesms.phonenumbers.PhoneNumberFormatter;
+import org.thoughtcrime.securesms.util.LocaleFeatureFlags;
 import org.thoughtcrime.securesms.util.Util;
 
 import java.util.Collections;

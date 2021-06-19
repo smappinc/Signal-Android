@@ -73,6 +73,7 @@ import org.thoughtcrime.securesms.sharing.ShareActivity;
 import org.thoughtcrime.securesms.util.AttachmentUtil;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.FullscreenHelper;
+import org.thoughtcrime.securesms.util.LifecycleCursorWrapper;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask.Attachment;
 import org.thoughtcrime.securesms.util.StorageUtil;
@@ -103,6 +104,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
   public static final String HIDE_ALL_MEDIA_EXTRA = "came_from_all_media";
   public static final String SHOW_THREAD_EXTRA    = "show_thread";
   public static final String SORTING_EXTRA        = "sorting";
+  public static final String IS_VIDEO_GIF         = "is_video_gif";
 
   private ViewPager             mediaPager;
   private View                  detailsContainer;
@@ -115,6 +117,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
   private String                initialMediaType;
   private long                  initialMediaSize;
   private String                initialCaption;
+  private boolean               initialMediaIsVideoGif;
   private boolean               leftIsRecent;
   private MediaPreviewViewModel viewModel;
   private ViewPagerListener     viewPagerListener;
@@ -126,7 +129,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
   private MediaDatabase.Sorting sorting;
   private FullscreenHelper      fullscreenHelper;
 
-  private @Nullable Cursor cursor = null;
+  private @Nullable LifecycleCursorWrapper cursor = null;
 
   public static @NonNull Intent intentFromMediaRecord(@NonNull Context context,
                                                       @NonNull MediaRecord mediaRecord,
@@ -139,6 +142,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
     intent.putExtra(MediaPreviewActivity.SIZE_EXTRA, attachment.getSize());
     intent.putExtra(MediaPreviewActivity.CAPTION_EXTRA, attachment.getCaption());
     intent.putExtra(MediaPreviewActivity.LEFT_IS_RECENT_EXTRA, leftIsRecent);
+    intent.putExtra(MediaPreviewActivity.IS_VIDEO_GIF, attachment.isVideoGif());
     intent.setDataAndType(attachment.getUri(), mediaRecord.getContentType());
     return intent;
   }
@@ -245,10 +249,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
 
   @Override
   protected void onDestroy() {
-    if (cursor != null) {
-      cursor.close();
-      cursor = null;
-    }
+    cursor = null;
     super.onDestroy();
   }
 
@@ -296,12 +297,13 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
     showThread       = intent.getBooleanExtra(SHOW_THREAD_EXTRA, false);
     sorting          = MediaDatabase.Sorting.values()[intent.getIntExtra(SORTING_EXTRA, 0)];
 
-    initialMediaUri  = intent.getData();
-    initialMediaType = intent.getType();
-    initialMediaSize = intent.getLongExtra(SIZE_EXTRA, 0);
-    initialCaption   = intent.getStringExtra(CAPTION_EXTRA);
-    leftIsRecent     = intent.getBooleanExtra(LEFT_IS_RECENT_EXTRA, false);
-    restartItem      = -1;
+    initialMediaUri        = intent.getData();
+    initialMediaType       = intent.getType();
+    initialMediaSize       = intent.getLongExtra(SIZE_EXTRA, 0);
+    initialCaption         = intent.getStringExtra(CAPTION_EXTRA);
+    leftIsRecent           = intent.getBooleanExtra(LEFT_IS_RECENT_EXTRA, false);
+    initialMediaIsVideoGif = intent.getBooleanExtra(IS_VIDEO_GIF, false);
+    restartItem            = -1;
   }
 
   private void initializeObservers() {
@@ -354,7 +356,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
     if (isMediaInDb()) {
       LoaderManager.getInstance(this).restartLoader(0, null, this);
     } else {
-      mediaPager.setAdapter(new SingleItemPagerAdapter(getSupportFragmentManager(), initialMediaUri, initialMediaType, initialMediaSize));
+      mediaPager.setAdapter(new SingleItemPagerAdapter(getSupportFragmentManager(), initialMediaUri, initialMediaType, initialMediaSize, initialMediaIsVideoGif));
 
       if (initialCaption != null) {
         detailsContainer.setVisibility(View.VISIBLE);
@@ -545,9 +547,11 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
       }
 
       if (cursor != null) {
+        getLifecycle().removeObserver(cursor);
         cursor.close();
       }
-      cursor = Objects.requireNonNull(data.first);
+      cursor = new LifecycleCursorWrapper(Objects.requireNonNull(data.first));
+      getLifecycle().addObserver(cursor);
 
       int mediaPosition = Objects.requireNonNull(data.second);
 
@@ -632,21 +636,24 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
 
   private static class SingleItemPagerAdapter extends FragmentStatePagerAdapter implements MediaItemAdapter {
 
-    private final Uri    uri;
-    private final String mediaType;
-    private final long   size;
+    private final Uri     uri;
+    private final String  mediaType;
+    private final long    size;
+    private final boolean isVideoGif;
 
     private MediaPreviewFragment mediaPreviewFragment;
 
     SingleItemPagerAdapter(@NonNull FragmentManager fragmentManager,
                            @NonNull Uri uri,
                            @NonNull String mediaType,
-                           long size)
+                           long size,
+                           boolean isVideoGif)
     {
       super(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-      this.uri       = uri;
-      this.mediaType = mediaType;
-      this.size      = size;
+      this.uri        = uri;
+      this.mediaType  = mediaType;
+      this.size       = size;
+      this.isVideoGif = isVideoGif;
     }
 
     @Override
@@ -657,7 +664,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
     @NonNull
     @Override
     public Fragment getItem(int position) {
-      mediaPreviewFragment = MediaPreviewFragment.newInstance(uri, mediaType, size, true);
+      mediaPreviewFragment = MediaPreviewFragment.newInstance(uri, mediaType, size, true, isVideoGif);
       return mediaPreviewFragment;
     }
 

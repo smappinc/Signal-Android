@@ -886,10 +886,13 @@ public class SmsDatabase extends MessageDatabase {
         contentValues.put(READ, 1);
       }
 
-      db.update(TABLE_NAME, contentValues, ID_WHERE, SqlUtil.buildArgs(record.getId()));
-    }
+      SqlUtil.Query query   = SqlUtil.buildTrueUpdateQuery(ID_WHERE, SqlUtil.buildArgs(record.getId()), contentValues);
+      boolean       updated = db.update(TABLE_NAME, contentValues, query.getWhere(), query.getWhereArgs()) > 0;
 
-    notifyConversationListeners(threadId);
+      if (updated) {
+        notifyConversationListeners(threadId);
+      }
+    }
 
     return sameEraId;
   }
@@ -1156,7 +1159,7 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
-  public @NonNull InsertResult insertDecryptionFailedMessage(@NonNull RecipientId recipientId, long senderDeviceId, long sentTimestamp) {
+  public @NonNull InsertResult insertChatSessionRefreshedMessage(@NonNull RecipientId recipientId, long senderDeviceId, long sentTimestamp) {
     SQLiteDatabase db       = databaseHelper.getWritableDatabase();
     long           threadId = DatabaseFactory.getThreadDatabase(context).getThreadIdFor(Recipient.resolved(recipientId));
     long           type     = Types.SECURE_MESSAGE_BIT | Types.PUSH_MESSAGE_BIT;
@@ -1183,6 +1186,28 @@ public class SmsDatabase extends MessageDatabase {
     ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
 
     return new InsertResult(messageId, threadId);
+  }
+
+  @Override
+  public void insertBadDecryptMessage(@NonNull RecipientId recipientId, int senderDevice, long sentTimestamp, long receivedTimestamp, long threadId) {
+    ContentValues values = new ContentValues();
+    values.put(RECIPIENT_ID, recipientId.serialize());
+    values.put(ADDRESS_DEVICE_ID, senderDevice);
+    values.put(DATE_SENT, sentTimestamp);
+    values.put(DATE_RECEIVED, receivedTimestamp);
+    values.put(DATE_SERVER, -1);
+    values.put(READ, 0);
+    values.put(TYPE, Types.BAD_DECRYPT_TYPE);
+    values.put(THREAD_ID, threadId);
+
+    databaseHelper.getWritableDatabase().insert(TABLE_NAME, null, values);
+
+    DatabaseFactory.getThreadDatabase(context).incrementUnread(threadId, 1);
+    DatabaseFactory.getThreadDatabase(context).update(threadId, true);
+
+    notifyConversationListeners(threadId);
+
+    ApplicationDependencies.getJobManager().add(new TrimThreadJob(threadId));
   }
 
   @Override

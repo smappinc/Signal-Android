@@ -2,10 +2,11 @@ package org.thoughtcrime.securesms.crypto.storage;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
-import org.thoughtcrime.securesms.crypto.DatabaseSessionLock;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
 import org.thoughtcrime.securesms.database.IdentityDatabase.IdentityRecord;
@@ -19,7 +20,6 @@ import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.state.IdentityKeyStore;
 import org.whispersystems.libsignal.util.guava.Optional;
-import org.whispersystems.signalservice.api.SignalSessionLock;
 
 import java.util.concurrent.TimeUnit;
 
@@ -46,8 +46,8 @@ public class TextSecureIdentityKeyStore implements IdentityKeyStore {
     return TextSecurePreferences.getLocalRegistrationId(context);
   }
 
-  public boolean saveIdentity(SignalProtocolAddress address, IdentityKey identityKey, boolean nonBlockingApproval) {
-    try (SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+  public @NonNull SaveResult saveIdentity(SignalProtocolAddress address, IdentityKey identityKey, boolean nonBlockingApproval) {
+    synchronized (LOCK) {
       IdentityDatabase         identityDatabase = DatabaseFactory.getIdentityDatabase(context);
       RecipientId              recipientId      = RecipientId.fromExternalPush(address.getName());
       Optional<IdentityRecord> identityRecord   = identityDatabase.getIdentity(recipientId);
@@ -55,11 +55,11 @@ public class TextSecureIdentityKeyStore implements IdentityKeyStore {
       if (!identityRecord.isPresent()) {
         Log.i(TAG, "Saving new identity...");
         identityDatabase.saveIdentity(recipientId, identityKey, VerifiedStatus.DEFAULT, true, System.currentTimeMillis(), nonBlockingApproval);
-        return false;
+        return SaveResult.NEW;
       }
 
       if (!identityRecord.get().getIdentityKey().equals(identityKey)) {
-        Log.i(TAG, "Replacing existing identity...");
+        Log.i(TAG, "Replacing existing identity... Existing: " + identityRecord.get().getIdentityKey().hashCode() + " New: " + identityKey.hashCode());
         VerifiedStatus verifiedStatus;
 
         if (identityRecord.get().getVerifiedStatus() == VerifiedStatus.VERIFIED ||
@@ -73,27 +73,28 @@ public class TextSecureIdentityKeyStore implements IdentityKeyStore {
         identityDatabase.saveIdentity(recipientId, identityKey, verifiedStatus, false, System.currentTimeMillis(), nonBlockingApproval);
         IdentityUtil.markIdentityUpdate(context, recipientId);
         SessionUtil.archiveSiblingSessions(context, address);
-        return true;
+        DatabaseFactory.getSenderKeySharedDatabase(context).deleteAllFor(recipientId);
+        return SaveResult.UPDATE;
       }
 
       if (isNonBlockingApprovalRequired(identityRecord.get())) {
         Log.i(TAG, "Setting approval status...");
         identityDatabase.setApproval(recipientId, nonBlockingApproval);
-        return false;
+        return SaveResult.NON_BLOCKING_APPROVAL_REQUIRED;
       }
 
-      return false;
+      return SaveResult.NO_CHANGE;
     }
   }
 
   @Override
   public boolean saveIdentity(SignalProtocolAddress address, IdentityKey identityKey) {
-    return saveIdentity(address, identityKey, false);
+    return saveIdentity(address, identityKey, false) == SaveResult.UPDATE;
   }
 
   @Override
   public boolean isTrustedIdentity(SignalProtocolAddress address, IdentityKey identityKey, Direction direction) {
-    try (SignalSessionLock.Lock unused = DatabaseSessionLock.INSTANCE.acquire()) {
+    synchronized (LOCK) {
       if (DatabaseFactory.getRecipientDatabase(context).containsPhoneOrUuid(address.getName())) {
         IdentityDatabase identityDatabase = DatabaseFactory.getIdentityDatabase(context);
         RecipientId      ourRecipientId   = Recipient.self().getId();
@@ -143,7 +144,7 @@ public class TextSecureIdentityKeyStore implements IdentityKeyStore {
     }
 
     if (!identityKey.equals(identityRecord.get().getIdentityKey())) {
-      Log.w(TAG, "Identity keys don't match...");
+      Log.w(TAG, "Identity keys don't match... service: " + identityKey.hashCode() + " database: " + identityRecord.get().getIdentityKey().hashCode());
       return false;
     }
 
@@ -164,5 +165,12 @@ public class TextSecureIdentityKeyStore implements IdentityKeyStore {
     return !identityRecord.isFirstUse() &&
            System.currentTimeMillis() - identityRecord.getTimestamp() < TimeUnit.SECONDS.toMillis(TIMESTAMP_THRESHOLD_SECONDS) &&
            !identityRecord.isApprovedNonBlocking();
+  }
+
+  public enum SaveResult {
+    NEW,
+    UPDATE,
+    NON_BLOCKING_APPROVAL_REQUIRED,
+    NO_CHANGE
   }
 }

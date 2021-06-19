@@ -367,7 +367,6 @@ public class MediaSendActivity extends PassphraseRequiredActivity implements Med
 
     revealButton.setOnClickListener(v -> viewModel.onRevealButtonToggled());
 
-    qualityButton.setVisibility(Util.isLowMemory(this) ? View.GONE : View.VISIBLE);
     qualityButton.setOnClickListener(v -> QualitySelectorBottomSheetDialog.show(getSupportFragmentManager()));
 
     continueButton.setOnClickListener(v -> {
@@ -785,6 +784,7 @@ public class MediaSendActivity extends PassphraseRequiredActivity implements Med
       }
     });
 
+    viewModel.getShowMediaQualityToggle().observe(this, show -> qualityButton.setVisibility(show && !Util.isLowMemory(this) ? View.VISIBLE : View.GONE));
     viewModel.getSentMediaQuality().observe(this, q -> qualityButton.setImageResource(q == SentMediaQuality.STANDARD ? R.drawable.ic_quality_standard_32 : R.drawable.ic_quality_high_32));
 
     viewModel.getSelectedMedia().observe(this, media -> {
@@ -818,10 +818,16 @@ public class MediaSendActivity extends PassphraseRequiredActivity implements Med
         case ITEM_TOO_LARGE:
           Toast.makeText(this, R.string.MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit, Toast.LENGTH_LONG).show();
           break;
+        case ITEM_TOO_LARGE_OR_INVALID_TYPE:
+          Toast.makeText(this, R.string.MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit_or_had_an_unknown_type, Toast.LENGTH_LONG).show();
+          break;
         case ONLY_ITEM_TOO_LARGE:
           Toast.makeText(this, R.string.MediaSendActivity_an_item_was_removed_because_it_exceeded_the_size_limit, Toast.LENGTH_LONG).show();
           onNoMediaAvailable();
           break;
+        case ONLY_ITEM_IS_INVALID_TYPE:
+          Toast.makeText(this, R.string.MediaSendActivity_an_item_was_removed_because_it_had_an_unknown_type, Toast.LENGTH_LONG).show();
+          onNoMediaAvailable();
         case TOO_MANY_ITEMS:
           int maxSelection = viewModel.getMaxSelection();
           Toast.makeText(this, getResources().getQuantityString(R.plurals.MediaSendActivity_cant_share_more_than_n_items, maxSelection, maxSelection), Toast.LENGTH_SHORT).show();

@@ -205,8 +205,8 @@ public class VoiceNotePlaybackService extends MediaBrowserServiceCompat {
   private void sendViewedReceiptForCurrentWindowIndex() {
     if (player.getPlaybackState() == Player.STATE_READY &&
         player.getPlayWhenReady() &&
-        player.getCurrentWindowIndex() != C.INDEX_UNSET &&
-        FeatureFlags.sendViewedReceipts()) {
+        player.getCurrentWindowIndex() != C.INDEX_UNSET)
+    {
 
       final MediaDescriptionCompat descriptionCompat = queueDataAdapter.getMediaDescription(player.getCurrentWindowIndex());
 
@@ -217,7 +217,7 @@ public class VoiceNotePlaybackService extends MediaBrowserServiceCompat {
       SignalExecutors.BOUNDED.execute(() -> {
         Bundle          extras          = descriptionCompat.getExtras();
         long            messageId       = extras.getLong(VoiceNoteMediaDescriptionCompatFactory.EXTRA_MESSAGE_ID);
-        RecipientId     recipientId     = RecipientId.from(extras.getString(VoiceNoteMediaDescriptionCompatFactory.EXTRA_THREAD_RECIPIENT_ID));
+        RecipientId     recipientId     = RecipientId.from(extras.getString(VoiceNoteMediaDescriptionCompatFactory.EXTRA_INDIVIDUAL_RECIPIENT_ID));
         MessageDatabase messageDatabase = DatabaseFactory.getMmsDatabase(this);
 
         MessageDatabase.MarkedMessageInfo markedMessageInfo = messageDatabase.setIncomingMessageViewed(messageId);

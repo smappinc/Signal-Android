@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.AppCapabilities;
 import org.thoughtcrime.securesms.crypto.IdentityKeyUtil;
 import org.thoughtcrime.securesms.crypto.PreKeyUtil;
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
+import org.thoughtcrime.securesms.crypto.SenderKeyUtil;
 import org.thoughtcrime.securesms.crypto.SessionUtil;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.IdentityDatabase;
@@ -204,6 +205,7 @@ CodeVerificationRequest {
 
     TextSecurePreferences.setLocalRegistrationId(context, registrationId);
     SessionUtil.archiveAllSessions(context);
+    SenderKeyUtil.clearAllState(context);
 
     SignalServiceAccountManager accountManager     = AccountManagerFactory.createUnauthenticated(context, credentials.getE164number(), credentials.getPassword());
     KbsPinData                  kbsData            = isV2RegistrationLock ? PinState.restoreMasterKey(pin, kbsTokenData.getEnclave(), kbsTokenData.getBasicAuth(), kbsTokenData.getTokenResponse()) : null;

@@ -10,7 +10,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.components.TypingStatusRepository;
 import org.thoughtcrime.securesms.components.TypingStatusSender;
-import org.thoughtcrime.securesms.crypto.DatabaseSessionLock;
+import org.thoughtcrime.securesms.crypto.ReentrantSessionLock;
 import org.thoughtcrime.securesms.crypto.storage.SignalProtocolStoreImpl;
 import org.thoughtcrime.securesms.database.DatabaseObserver;
 import org.thoughtcrime.securesms.database.JobDatabase;
@@ -34,9 +34,7 @@ import org.thoughtcrime.securesms.messages.BackgroundMessageRetriever;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.messages.IncomingMessageProcessor;
 import org.thoughtcrime.securesms.net.PipeConnectivityListener;
-import org.thoughtcrime.securesms.notifications.DefaultMessageNotifier;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
-import org.thoughtcrime.securesms.notifications.v2.MessageNotifierV2;
 import org.thoughtcrime.securesms.notifications.OptimizedMessageNotifier;
 import org.thoughtcrime.securesms.payments.MobileCoinConfig;
 import org.thoughtcrime.securesms.payments.Payments;
@@ -45,6 +43,7 @@ import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.LiveRecipientCache;
 import org.thoughtcrime.securesms.revealable.ViewOnceMessageManager;
 import org.thoughtcrime.securesms.service.ExpiringMessageManager;
+import org.thoughtcrime.securesms.service.PendingRetryReceiptManager;
 import org.thoughtcrime.securesms.service.TrimThreadsByDateManager;
 import org.thoughtcrime.securesms.service.webrtc.SignalCallManager;
 import org.thoughtcrime.securesms.shakereport.ShakeToReport;
@@ -110,7 +109,7 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
       return new SignalServiceMessageSender(provideSignalServiceNetworkAccess().getConfiguration(context),
                                             new DynamicCredentialsProvider(context),
                                             new SignalProtocolStoreImpl(context),
-                                            DatabaseSessionLock.INSTANCE,
+                                            ReentrantSessionLock.INSTANCE,
                                             BuildConfig.SIGNAL_AGENT,
                                             TextSecurePreferences.isMultiDevice(context),
                                             Optional.fromNullable(IncomingMessageObserver.getPipe()),
@@ -249,6 +248,11 @@ public class ApplicationDependencyProvider implements ApplicationDependencies.Pr
   @Override
   public @NonNull SignalCallManager provideSignalCallManager() {
     return new SignalCallManager(context);
+  }
+
+  @Override
+  public @NonNull PendingRetryReceiptManager providePendingRetryReceiptManager() {
+    return new PendingRetryReceiptManager(context);
   }
 
   private static class DynamicCredentialsProvider implements CredentialsProvider {
