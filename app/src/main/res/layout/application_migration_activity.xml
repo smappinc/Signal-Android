@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fillViewport="true"
-    android:background="@color/core_ultramarine_dark">
+    android:background="@color/core_ultramarine_dark"
+    android:fillViewport="true">
 
     <FrameLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center" >
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="580dp"
+            android:layout_marginTop="600dp"
             android:indeterminate="true" />
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/app_name"
             android:textColor="@color/core_white"
-            android:layout_marginTop="630dp"
+            android:layout_marginTop="650dp"
             android:textSize="25sp"/>
 
     </FrameLayout>

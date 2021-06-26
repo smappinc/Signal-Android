@@ -46,6 +46,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 //Google Mediation
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.annimon.stream.Stream;
 import com.google.ads.mediation.facebook.FacebookAdapter;
 import com.google.ads.mediation.facebook.FacebookExtras;
@@ -216,6 +220,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   //Google Admob
   private NativeAd    nativeAd;
   private FrameLayout nativeAdPlaceholder;
+  private InterstitialAd mInterstitialAd;
 
   // The number of native ads to load and display.
   public static final int NUMBER_OF_ADS = 5;
@@ -268,6 +273,8 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     proxyStatus.setOnClickListener(v -> onProxyStatusClicked());
 
+    //Added Interstital Ads
+    setAds();
     fab.show();
     cameraFab.show();
 
@@ -279,16 +286,66 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     new ItemTouchHelper(new ArchiveListenerCallback()).attachToRecyclerView(list);
 
-    fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), NewConversationActivity.class)));
-    cameraFab.setOnClickListener(v -> {
-      Permissions.with(requireActivity())
-                 .request(Manifest.permission.CAMERA)
-                 .ifNecessary()
-                 .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
-                 .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))
-                 .onAllGranted(() -> startActivity(MediaSendActivity.buildCameraFirstIntent(requireActivity())))
-                 .onAnyDenied(() -> Toast.makeText(requireContext(), R.string.ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video, Toast.LENGTH_LONG).show())
-                 .execute();
+    //Added
+    fab.setOnClickListener(new View.OnClickListener() {
+                             @Override public void onClick(View v) {
+                               // If a interstitial is ready, show it
+                               if (mInterstitialAd!=null){
+                                 mInterstitialAd.show(requireActivity());
+
+                                 mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                                   @Override public void onAdDismissedFullScreenContent() {
+                                     super.onAdDismissedFullScreenContent();
+                                     startActivity(new Intent(requireActivity(),NewConversationActivity.class));
+                                     mInterstitialAd = null;
+                                     setAds();
+                                   }
+                                 });
+
+                               } else {
+                                 startActivity(new Intent(requireActivity(),NewConversationActivity.class));
+                                 setAds();
+                               }
+
+                             }
+
+    });
+
+    cameraFab.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        //If a interstital is ready, show it
+        if (mInterstitialAd!=null){
+          mInterstitialAd.show(requireActivity());
+
+          mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override public void onAdDismissedFullScreenContent() {
+              super.onAdDismissedFullScreenContent();
+              Permissions.with(requireActivity())
+                         .request(Manifest.permission.CAMERA)
+                         .ifNecessary()
+                         .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
+                         .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))
+                         .onAllGranted(() -> startActivity(MediaSendActivity.buildCameraFirstIntent(requireActivity())))
+                         .onAnyDenied(() -> Toast.makeText(requireContext(), R.string.ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video, Toast.LENGTH_LONG).show())
+                         .execute();
+              mInterstitialAd = null;
+              setAds();
+            }
+          });
+        } else {
+
+          Permissions.with(requireActivity())
+                     .request(Manifest.permission.CAMERA)
+                     .ifNecessary()
+                     .withRationaleDialog(getString(R.string.ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera), R.drawable.ic_camera_24)
+                     .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video))
+                     .onAllGranted(() -> startActivity(MediaSendActivity.buildCameraFirstIntent(requireActivity())))
+                     .onAnyDenied(() -> Toast.makeText(requireContext(), R.string.ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video, Toast.LENGTH_LONG).show())
+                     .execute();
+          setAds();
+
+        }
+      }
     });
 
     initializeViewModel();
@@ -507,9 +564,33 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   //Added
+  /*
+   * Admob Interstitial Ads
+   */
+  public void setAds(){
+
+    AdRequest adRequest = new AdRequest.Builder().build();
+
+    InterstitialAd.load(requireContext(), getString(R.string.admob_interstitial_ads), adRequest, new InterstitialAdLoadCallback() {
+      @Override
+      public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+        // The mInterstitialAd reference will be null until
+        // an ad is loaded.
+        mInterstitialAd = interstitialAd;
+        Log.i(TAG, "onAdLoaded");
+      }
+
+      @Override
+      public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+        // Handle the error
+        Log.i(TAG, loadAdError.getMessage());
+        mInterstitialAd = null;
+      }
+    });
+  }
 
   /**
-   * Google Admob
+   * Google Admob Native Ads
    */
   private void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView) {
     // Set other ad assets.
@@ -652,7 +733,28 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     ImageView icon = requireView().findViewById(R.id.toolbar_icon);
 
     AvatarUtil.loadIconIntoImageView(recipient, icon);
-    icon.setOnClickListener(v -> getNavigator().goToAppSettings());
+
+    //Added
+    icon.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        //If an interstitial is ready, show it
+        if (mInterstitialAd!=null){
+          mInterstitialAd.show(requireActivity());
+
+          mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override public void onAdDismissedFullScreenContent() {
+              super.onAdDismissedFullScreenContent();
+              getNavigator().goToAppSettings();
+              mInterstitialAd = null;
+              setAds();
+            }
+          });
+        } else {
+          getNavigator().goToAppSettings();
+          setAds();
+        }
+      }
+    });
   }
 
   private void initializeSearchListener() {
