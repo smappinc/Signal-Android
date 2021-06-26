@@ -12,6 +12,8 @@ apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply from: 'translations.gradle'
 apply from: 'witness-verifications.gradle'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'app.cash.exhaustive'
 
 repositories {
     maven {
@@ -76,6 +78,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     kotlinOptions {
+        jvmTarget = "1.8"
         freeCompilerArgs = ["-Xallow-result-return-type"]
     }
 
@@ -117,6 +120,8 @@ android {
         buildConfigField "String", "SIGNAL_SERVICE_STATUS_URL", "\"uptime.signal.org\""
         buildConfigField "String", "SIGNAL_KEY_BACKUP_URL", "\"https://api.backup.signal.org\""
         buildConfigField "String", "SIGNAL_SFU_URL", "\"https://sfu.voip.signal.org\""
+        buildConfigField "String[]", "SIGNAL_SFU_INTERNAL_NAMES", "new String[]{\"Test\", \"Staging\"}"
+        buildConfigField "String[]", "SIGNAL_SFU_INTERNAL_URLS", "new String[]{\"https://sfu.test.voip.signal.org\", \"https://sfu.staging.voip.signal.org\"}"
         buildConfigField "String", "CONTENT_PROXY_HOST", "\"contentproxy.signal.org\""
         buildConfigField "int", "CONTENT_PROXY_PORT", "443"
         buildConfigField "String", "SIGNAL_AGENT", "\"OWA\""

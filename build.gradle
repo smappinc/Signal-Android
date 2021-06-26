@@ -24,6 +24,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:10.0.0"
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.10, 0.99.99]'
+        classpath 'app.cash.exhaustive:exhaustive-gradle:0.1.1'
     }
 }
 
