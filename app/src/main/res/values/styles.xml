@@ -557,6 +557,7 @@
         <item name="android:background">#FFCC66</item>
         <item name="android:width">15dp</item>
         <item name="android:height">15dp</item>
+    </style>
 
     <style name="Widget.Signal.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="android:paddingStart">@dimen/dsl_settings_gutter</item>
