@@ -983,8 +983,23 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     getNavigator().goToGroupCreation();
   }
 
+  //Added
   private void handleDisplaySettings() {
-    getNavigator().goToAppSettings();
+    if (mInterstitialAd!=null){
+      mInterstitialAd.show(requireActivity());
+
+      mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+        @Override public void onAdDismissedFullScreenContent() {
+          super.onAdDismissedFullScreenContent();
+          getNavigator().goToAppSettings();
+          mInterstitialAd = null;
+          setAds();
+        }
+      });
+    } else {
+      getNavigator().goToAppSettings();
+      setAds();
+    }
   }
 
   private void handleClearPassphrase() {
